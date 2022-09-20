@@ -45,7 +45,7 @@ section .data
     format:db "%d",0
     string:db "%s",0
     format2:db "The number is: %d",10,0
-    format3:db "The string is: %s"0
+    format3:db "The string is: %s",0
     s times 10000 db 0
 section .bss
 number resb 4
