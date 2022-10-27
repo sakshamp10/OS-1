@@ -32,20 +32,20 @@ int main(int agrc,char *argv[])
         int checkrem=0;
         DIR *dir=opendir(".");
         struct stat st;
-        struct dirent *dir;
-        dir=readdir(dirr);
+        struct dirent *dirr;
+        dirr=readdir(dir);
         while(dir!=NULL)
         {
-            if(strcmp(dir->d_name,tok[1])==0)
+            if(strcmp(dirr->d_name,tok[1])==0)
             {
-                stat(dir->d_name,&st);
+                stat(dirr->d_name,&st);
                 if(!(S_ISREG(st.st_mode)))
                 {
                     printf("Cannot delete the directory\n");
                 }
             }
-            int r=remove(dir->d_name);
-            dir=readdir(dirr);
+            int r=remove(dirr->d_name);
+            dirr=readdir(dir);
         }
     }
     if(strcmp(tok[0],"-i")==0)
@@ -57,9 +57,9 @@ int main(int agrc,char *argv[])
         dir=readdir(dirr);
         while(dir!=NULL)
         {
-            if(strcmp(dir->d_name,tok[1])==0)
+            if(strcmp(dirr->d_name,tok[1])==0)
             {
-                stat(dir->d_name,&st);
+                stat(dirr->d_name,&st);
                 if(!(S_ISREG(st.st_mode)))
                 {
                     printf("Cannot delete the directory\n");
@@ -68,16 +68,16 @@ int main(int agrc,char *argv[])
             char inp;
             printf("Do you want to remove the file: %s?[Y/n] ",tok[1]);
             scanf("%c",&inp);
-            if(c=='Y' || c=='y')
+            if(inp=='Y' || inp=='y')
             {
-                int r=remove(dir->d_name);
+                int r=remove(dirr->d_name);
                 if(r==0)
                 {
                     checkrem=1;
                     break;
                 }
             }
-            dir=readdir(dirr);
+            dirr=readdir(dir);
         }
         if(checkrem==0)
         {
@@ -91,25 +91,25 @@ int main(int agrc,char *argv[])
         DIR *dir=opendir(".");
         struct stat st;
         struct dirent *dirr;
-        dir=readdir(dirr);
+        dirr=readdir(dir);
         while(dir!=NULL)
         {
-            if(strcmp(dir->d_name,tok[1])==0)
+            if(strcmp(dirr->d_name,tok[1])==0)
             {
-                stat(dir->d_name,&st);
+                stat(dirr->d_name,&st);
                 if(!(S_ISREG(st.st_mode)))
                 {
                     printf("Cannot delete the directory\n");
                 }
             }
-            int r=remove(dir->d_name);
+            int r=remove(dirr->d_name);
             if(r==0)
             {
                 printf("Directory deleted successfully");
-                chrckrem=1;
+                checkrem=1;
                 break;
             }
-            dir=readdir(dirr);
+            dirr=readdir(dir);
         }
         if(checkrem==0)
         {
