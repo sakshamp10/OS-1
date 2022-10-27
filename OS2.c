@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <libgen.h>
+char *parentcwd;
 char* cd_read_line()
 {
     char *line=NULL;
@@ -35,8 +36,11 @@ char** cd_split_line(char *line)
 }
 void pwd()
 {
-    char cwdarr[256];
-    if(getcwd(cwdarr, sizeof(cwdarr))==NULL)
+    char *cwdarr;
+    char *buffer=NULL;
+    size_t size=0;
+    cwdarr=getcwd(buffer,size);
+    if(cwdarr==NULL)
     {
         perror("directory error ");
     }
@@ -143,6 +147,11 @@ void cd(char **args)
                 chdir("/");
             }
             else
+            if(strcmp(args[1],"~")==0)
+            {
+                chdir(parentcwd);
+            }
+            else
             {
                 int suc=chdir(args[1]);
                 if(suc==-1 && strcmp(args[1],"~")!=0)
@@ -154,8 +163,168 @@ void cd(char **args)
         else
         if(ct==0)
         {
-            chdir("/Users/chaitanyadua");
+            chdir(parentcwd);
         }
+    }
+}
+void callrm(char **args)
+{
+    pid_t t=fork();
+    if(t<0)
+    {
+        printf("Failed\n");
+        return;
+    }
+    if(t==0)
+    {
+        char *mypath;
+        mypath=(char*)malloc(256*sizeof(char));int ind=0;
+        for(int i=0;parentcwd[i]!='\0';i++)
+        {
+            mypath[ind++]=parentcwd[i];
+        }
+        char *st="/rm.o";
+        for(int i=0;i<5;i++)
+        {
+            mypath[ind++]=st[i];
+        }
+        char *pass;int ind2=0;
+        pass=(char*)malloc(256*sizeof(char));
+        for(int i=1;args[i]!=NULL;i++)
+        {
+            for(int j=0;args[i][j]!='\0';j++)
+            {
+                pass[ind2++]=args[i][j];
+            }
+            pass[ind2++]=' ';
+        }
+        char *arr[3]={mypath,pass,NULL};
+        char *env[1]={NULL};
+        execve(mypath,arr,env);
+    }
+    else
+    {
+        wait(NULL);
+    }
+}
+void callls(char **args)
+{
+    pid_t t=fork();
+    if(t<0)
+    {
+        printf("Failed\n");
+        return;
+    }
+    if(t==0)
+    {
+        char *mypath;
+        mypath=(char*)malloc(256*sizeof(char));int ind=0;
+        for(int i=0;parentcwd[i]!='\0';i++)
+        {
+            mypath[ind++]=parentcwd[i];
+        }
+        char *st="/ls.o";
+        for(int i=0;i<5;i++)
+        {
+            mypath[ind++]=st[i];
+        }
+        char *pass;int ind2=0;
+        pass=(char*)malloc(256*sizeof(char));
+        for(int i=1;args[i]!=NULL;i++)
+        {
+            for(int j=0;args[i][j]!='\0';j++)
+            {
+                pass[ind2++]=args[i][j];
+            }
+            pass[ind2++]=' ';
+        }
+        char *arr[3]={mypath,pass,NULL};
+        char *env[1]={NULL};
+        execve(mypath,arr,env);
+    }
+    else
+    {
+        wait(NULL);
+    }
+}
+void calldate(char **args)
+{
+    pid_t t=fork();
+    if(t<0)
+    {
+        printf("Failed\n");
+        return;
+    }
+    if(t==0)
+    {
+        char *mypath;
+        mypath=(char*)malloc(256*sizeof(char));int ind=0;
+        for(int i=0;parentcwd[i]!='\0';i++)
+        {
+            mypath[ind++]=parentcwd[i];
+        }
+        char *st="/date.o";
+        for(int i=0;i<7;i++)
+        {
+            mypath[ind++]=st[i];
+        }
+        char *pass;int ind2=0;
+        pass=(char*)malloc(256*sizeof(char));
+        for(int i=1;args[i]!=NULL;i++)
+        {
+            for(int j=0;args[i][j]!='\0';j++)
+            {
+                pass[ind2++]=args[i][j];
+            }
+            pass[ind2++]=' ';
+        }
+        char *arr[3]={mypath,pass,NULL};
+        char *env[1]={NULL};
+        execve(mypath,arr,env);
+    }
+    else
+    {
+        wait(NULL);
+    }
+}
+void mkdircall(char **args)
+{
+    pid_t t=fork();
+    if(t<0)
+    {
+        printf("Failed\n");
+        return;
+    }
+    if(t==0)
+    {
+        char *mypath;
+        mypath=(char*)malloc(256*sizeof(char));int ind=0;
+        for(int i=0;parentcwd[i]!='\0';i++)
+        {
+            mypath[ind++]=parentcwd[i];
+        }
+        char *st="/mkdir.o";
+        for(int i=0;i<8;i++)
+        {
+            mypath[ind++]=st[i];
+        }
+        char *pass;int ind2=0;
+        pass=(char*)malloc(256*sizeof(char));
+        for(int i=1;args[i]!=NULL;i++)
+        {
+            for(int j=0;args[i][j]!='\0';j++)
+            {
+                pass[ind2++]=args[i][j];
+            }
+            pass[ind2++]=' ';
+        }
+        char *arr[3]={mypath,pass,NULL};
+        char *env[1]={NULL};
+        execve(mypath,arr,env);
+    }
+    else
+    {
+        wait(NULL);
     }
 }
 void cd_exec(char **args)
@@ -176,6 +345,28 @@ void cd_exec(char **args)
     {
         cd(args);
         return;
+    }
+    else
+    if(strcmp(args[0],"mkdir")==0)
+    {
+        mkdircall(args);
+        return;
+    }
+    else
+    if(strcmp(args[0],"date")==0)
+    {
+        calldate(args);
+        return;
+    }
+    else
+    if(strcmp(args[0],"ls")==0)
+    {
+        callls(args);
+    }
+    else
+    if(strcmp(args[0],"rm")==0)
+    {
+        callrm(args);
     }
     /*pid_t child_pid=fork();
     if(child_pid==0)
@@ -201,7 +392,10 @@ void cd_exec(char **args)
 }
 int main()
 {
-    printf("Chaitanya's shell...........\n");
+    char *buffer=NULL;
+    size_t size=0;
+    parentcwd=getcwd(buffer,size);
+    printf("............Chaitanya's shell...........\n");
     while(1)
     {
         //printf("Chaitanya's shell.........\n");
