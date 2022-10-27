@@ -54,7 +54,7 @@ int main(int agrc,char *argv[])
         DIR *dir=opendir(".");
         struct stat st;
         struct dirent *dirr;
-        dir=readdir(dirr);
+        dirr=readdir(dir);
         while(dir!=NULL)
         {
             if(strcmp(dirr->d_name,tok[1])==0)
