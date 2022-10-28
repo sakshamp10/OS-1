@@ -126,7 +126,7 @@ void echo(char **args)
     if(flag!=1)
     printf("\n");
 }
-void cd(char **args)
+/*void cd(char **args)
 {
     int ct=0;
     for(int i=1;args[i]!=NULL;i++)
@@ -153,7 +153,18 @@ void cd(char **args)
             }
             else
             {
-                int suc=chdir(args[1]);
+                char *path;
+                path=(char *)malloc(256*sizeof(char));int f=0;
+                for(int i=0;parentcwd[i]!='\0';i++)
+                {
+                    path[f++]=parentcwd[i];
+                }
+                path[f++]='/';
+                for(int i=0;args[1][i]!='\0';i++)
+                {
+                    path[f++]=args[1][i];
+                }
+                int suc=chdir(path);
                 if(suc==-1 && strcmp(args[1],"~")!=0)
                 {
                     printf("No such file or directory");
@@ -164,6 +175,41 @@ void cd(char **args)
         if(ct==0)
         {
             chdir(parentcwd);
+        }
+    }
+}*/
+void cd(char **args) {
+    int ct = 0;
+    for (int i = 1; args[i] != NULL; i++) {
+        ct++;
+    }
+    if (ct > 1) {
+        printf("too many arguments\n");
+        return;
+    } else {
+        if (ct == 1) {
+            if (strcmp(args[1], "/") == 0) {
+                chdir("/");
+            } else if (strcmp(args[1], "~") == 0 || strcmp(args[1], "root") == 0) {
+                chdir("~");
+            } else {
+                char *path;
+                path = (char *) malloc(256 * sizeof(char));
+                int f = 0;
+                for (int i = 0; parentcwd[i] != '\0'; i++) {
+                    path[f++] = parentcwd[i];
+                }
+                path[f++] = '/';
+                for (int i = 0; args[1][i] != '\0'; i++) {
+                    path[f++] = args[1][i];
+                }
+                int suc = chdir(path);
+                if (suc == -1) {
+                    printf("No such file or directory");
+                }
+            }
+        } else if (ct == 0) {
+            chdir("~");
         }
     }
 }
@@ -225,6 +271,46 @@ void callls(char **args)
         }
         char *st="/ls.o";
         for(int i=0;i<5;i++)
+        {
+            mypath[ind++]=st[i];
+        }
+        char *pass;int ind2=0;
+        pass=(char*)malloc(256*sizeof(char));
+        for(int i=1;args[i]!=NULL;i++)
+        {
+            for(int j=0;args[i][j]!='\0';j++)
+            {
+                pass[ind2++]=args[i][j];
+            }
+            pass[ind2++]=' ';
+        }
+        char *arr[3]={mypath,pass,NULL};
+        char *env[1]={NULL};
+        execve(mypath,arr,env);
+    }
+    else
+    {
+        wait(NULL);
+    }
+}
+void callcat(char **args)
+{
+    pid_t t=fork();
+    if(t<0)
+    {
+        printf("Failed\n");
+        return;
+    }
+    if(t==0)
+    {
+        char *mypath;
+        mypath=(char*)malloc(256*sizeof(char));int ind=0;
+        for(int i=0;parentcwd[i]!='\0';i++)
+        {
+            mypath[ind++]=parentcwd[i];
+        }
+        char *st="/cat.o";
+        for(int i=0;i<6;i++)
         {
             mypath[ind++]=st[i];
         }
@@ -362,11 +448,19 @@ void cd_exec(char **args)
     if(strcmp(args[0],"ls")==0)
     {
         callls(args);
+        return;
     }
     else
     if(strcmp(args[0],"rm")==0)
     {
         callrm(args);
+        return;
+    }
+    else
+    if(strcmp(args[0],"cat")==0)
+    {
+        callcat(args);
+        return;
     }
     /*pid_t child_pid=fork();
     if(child_pid==0)
