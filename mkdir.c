@@ -109,10 +109,27 @@ int main(int argc,char* argv[])
         }*/
         for(int i=0;i<ind2;i++)
         {
-            int check;
-            char *newdirectory=listoffolders[i];
-            check=mkdir(newdirectory,0777);
-            chdir(newdirectory);
+            if(i!=ind2-1)
+            {
+                int check;
+                char *newdirectory=listoffolders[i];
+                check=mkdir(newdirectory,0777);
+                chdir(newdirectory);
+            }
+            else
+            if(i==ind2-1)
+            {
+                int check;
+                char *newdirectory=listoffolders[i];
+                char *newfindir;
+                newfindir=(char *)malloc(256*sizeof(char));int g=0;
+                for(int i=0;i<strlen(newdirectory)-1;i++)
+                {
+                    newfindir[g++]=newdirectory[i];
+                }
+                check=mkdir(newfindir,0777);
+                chdir(newdirectory);
+            }
         }
     }
     else
@@ -189,7 +206,13 @@ int main(int argc,char* argv[])
             }
             int check;
             char *newdirectory=listoffolders[ind2-1];
-            check=mkdir(newdirectory,0777);
+            char *newfindir;
+            newfindir=(char *)malloc(256*sizeof(char));int g=0;
+            for(int i=0;i<strlen(newdirectory)-1;i++)
+            {
+                newfindir[g++]=newdirectory[i];
+            }
+            check=mkdir(newfindir,0777);
             if(check==0)
             {
                 printf("mkdir: created directory ");
