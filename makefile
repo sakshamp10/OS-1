@@ -1,3 +1,8 @@
-all:
-		yasm Question2.asm -f elf64 -o Question2.o
-		gcc -no-pie Question2.o
+default:
+	gcc rm.c -o rm.o
+	gcc mkdir.c -o mkdir.o
+	gcc ls.c -o ls.o
+	gcc cat.c -o cat.o
+	gcc date.c -o date.o
+	gcc OS2.c 
+	./a.out
